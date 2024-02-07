@@ -63,7 +63,7 @@ sql_query = text("""
 #     WHERE g.id = :group_id;
 # """).bindparams(group_id=group_id)
 
-# # 7 Знайти оцінки студентів у окремій групі з певного предмета.
+# # 7. Знайти оцінки студентів у окремій групі з певного предмета.
 # group_id = 1  # Замініть на потрібне значення 1,2,3
 # subject_id = 2 # Замініть на потрібне значення 1,2,3,4,5
 # sql_query = text("""
@@ -73,7 +73,7 @@ sql_query = text("""
 #     WHERE s.group_id = :group_id AND e.subject_id = :subject_id;
 # """).bindparams(group_id=group_id, subject_id=subject_id)
 
-# # 8 Знайти середній бал, який ставить певний викладач зі своїх предметів.
+# # 8. Знайти середній бал, який ставить певний викладач зі своїх предметів.
 # sql_query = text("""
 #     SELECT t.id as teacher_id, t.teacher_name, AVG(e.grade) as avg_grade
 #     FROM teachers t
@@ -82,7 +82,7 @@ sql_query = text("""
 #     GROUP BY t.id, t.teacher_name;
 # """)
 
-# # 9 Знайти список курсів, які відвідує студент.
+# # 9. Знайти список курсів, які відвідує студент.
 # sql_query = text("""
 #     SELECT s.student_name, sb.subject_name
 #     FROM students s
@@ -90,7 +90,7 @@ sql_query = text("""
 #     JOIN subjects sb ON e.subject_id = sb.id;
 # """)
 
-# # 10 Список курсів, які певному студенту читає певний викладач.
+# # 10. Список курсів, які певному студенту читає певний викладач.
 # student_id = 1  # Замініть на потрібне значення 1-30
 # teacher_id = 2 # Замініть на потрібне значення 1,2,3
 # sql_query = text("""
@@ -100,6 +100,31 @@ sql_query = text("""
 #     JOIN students s ON s.group_id = group_id
 #     WHERE s.id = :student_id AND t.id = :teacher_id;
 # """).bindparams(student_id=student_id, teacher_id=teacher_id)
+
+# # 11. Середній бал, який певний викладач ставить певному студентові.
+# student_id = 1  # Замініть на потрібне значення 1-30
+# teacher_id = 1 # Замініть на потрібне значення 1,2,3
+# sql_query = text("""
+#     SELECT AVG(e.grade) as average_grade
+#     FROM estimates e
+#     JOIN subjects sub ON e.subject_id = sub.id
+#     JOIN teachers t ON sub.teacher_id = t.id
+#     JOIN students s ON e.student_id = s.id
+#     WHERE s.id = :student_id AND t.id = :teacher_id;
+# """).bindparams(student_id=student_id, teacher_id=teacher_id)
+
+# # 12. Оцінки студентів у певній групі з певного предмета на останньому занятті.
+# group_id = 1  # Замініть на потрібне значення 1,2,3
+# subject_id = 2 # Замініть на потрібне значення 1,2,3,4,5
+# sql_query = text("""
+#     SELECT e.grade, e.time_rating
+#     FROM estimates e
+#     JOIN subjects sub ON e.subject_id = sub.id
+#     JOIN students s ON e.student_id = s.id
+#     JOIN groups g ON s.group_id = g.id
+#     WHERE g.id = :group_id AND sub.id = :subject_id
+#     ORDER BY e.time_rating;
+# """).bindparams(group_id=group_id, subject_id=subject_id)
 
 # Виконання SQL-запиту через cursor.execute
 with engine.connect() as connection:
